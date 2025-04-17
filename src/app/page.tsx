@@ -31,7 +31,8 @@ export default function Home() {
   return (
     <main className="p-6 text-lg">
       <h1>Boothly</h1>
-      <p>{status}</p>
+      <p>{status} 🚀</p>
+
     </main>
   )
 }

@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -25,15 +24,13 @@ export default function Home() {
     checkConnection()
   }, [])
 
-  // Prevent server/client mismatch by only rendering on client
   if (!isClient) return null
 
   return (
     <main className="p-6 text-lg">
       <h1>Boothly</h1>
       <p>{status} 🚀</p>
-
+      <p>THIS IS LIVE CODE</p> {/* ✅ Moved inside the return block */}
     </main>
   )
 }
-<p>THIS IS LIVE CODE</p>

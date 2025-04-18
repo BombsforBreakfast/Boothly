@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
-import type { User } from '@supabase/supabase-js' // ✅ NEW LINE
+import type { User } from '@supabase/supabase-js'
 
 export default function Home() {
   const [status, setStatus] = useState('Checking Supabase...')

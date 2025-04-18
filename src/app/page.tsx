@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
+import type { User } from '@supabase/supabase-js'
 
 export default function Home() {
   const [status, setStatus] = useState('Checking Supabase...')
   const [isClient, setIsClient] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [error, setError] = useState('')
   const [isLogin, setIsLogin] = useState(true)
 
@@ -16,7 +17,7 @@ export default function Home() {
     setIsClient(true)
 
     const checkConnection = async () => {
-      const { data, error } = await supabase.from('test_table').select('*')
+      const { error } = await supabase.from('test_table').select('*')
       if (error) {
         console.error('Supabase error:', error)
         setStatus('❌ Connection failed. Check the console.')

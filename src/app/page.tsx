@@ -9,7 +9,9 @@ export default function Home() {
   const [isClient, setIsClient] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState<User | null>(null) // ✅ FIXED: no more `any`
+  const [role, setRole] = useState('maker')
+  const [user, setUser] = useState<User | null>(null)
+  const [userRole, setUserRole] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [isLogin, setIsLogin] = useState(true)
 
@@ -17,7 +19,7 @@ export default function Home() {
     setIsClient(true)
 
     const checkConnection = async () => {
-      const { error } = await supabase.from('test_table').select('*') // ✅ FIXED: removed unused `data`
+      const { error } = await supabase.from('test_table').select('*')
       if (error) {
         console.error('Supabase error:', error)
         setStatus('❌ Connection failed. Check the console.')
@@ -28,13 +30,32 @@ export default function Home() {
 
     checkConnection()
 
-    // Auth session listener
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      const currentUser = session?.user ?? null
+      setUser(currentUser)
+      if (currentUser) {
+        const { data } = await supabase
+          .from('user_profiles')
+          .select('role')
+          .eq('id', currentUser.id)
+          .single()
+        setUserRole(data?.role ?? null)
+      }
     })
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const currentUser = session?.user ?? null
+      setUser(currentUser)
+      if (currentUser) {
+        const { data } = await supabase
+          .from('user_profiles')
+          .select('role')
+          .eq('id', currentUser.id)
+          .single()
+        setUserRole(data?.role ?? null)
+      } else {
+        setUserRole(null)
+      }
     })
 
     return () => listener?.subscription.unsubscribe()
@@ -48,13 +69,23 @@ export default function Home() {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) setError(error.message)
     } else {
-      const { error } = await supabase.auth.signUp({ email, password })
-      if (error) setError(error.message)
+      const { data, error } = await supabase.auth.signUp({ email, password })
+      if (error) return setError(error.message)
+
+      const userId = data.user?.id
+      if (userId) {
+        const { error: profileError } = await supabase.from('user_profiles').insert([
+          { id: userId, role },
+        ])
+        if (profileError) console.error('Failed to save role:', profileError)
+      }
     }
   }
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
+    setUser(null)
+    setUserRole(null)
   }
 
   if (!isClient) return null
@@ -68,6 +99,7 @@ export default function Home() {
       {user ? (
         <>
           <p className="mb-4">👋 Logged in as <strong>{user.email}</strong></p>
+          <p className="mb-4">Role: <strong>{userRole}</strong></p>
           <button className="bg-red-600 text-white px-4 py-2 rounded" onClick={handleLogout}>
             Log out
           </button>
@@ -90,6 +122,44 @@ export default function Home() {
             onChange={e => setPassword(e.target.value)}
             className="border p-2 rounded"
           />
+          {!isLogin && (
+            <fieldset className="border border-gray-300 p-4 rounded">
+              <legend className="font-semibold mb-2">I am a...</legend>
+              <label className="block mb-2">
+                <input
+                  type="radio"
+                  name="role"
+                  value="maker"
+                  checked={role === 'maker'}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="mr-2"
+                />
+                Maker
+              </label>
+              <label className="block mb-2">
+                <input
+                  type="radio"
+                  name="role"
+                  value="organizer"
+                  checked={role === 'organizer'}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="mr-2"
+                />
+                Event Organizer
+              </label>
+              <label className="block">
+                <input
+                  type="radio"
+                  name="role"
+                  value="shop_owner"
+                  checked={role === 'shop_owner'}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="mr-2"
+                />
+                Shop Owner
+              </label>
+            </fieldset>
+          )}
           {error && <p className="text-red-600">{error}</p>}
           <button className="bg-blue-600 text-white px-4 py-2 rounded">
             {isLogin ? 'Log in' : 'Sign up'}

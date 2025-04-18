@@ -1,3 +1,4 @@
+// Updated with loading state and verification email message
 'use client'
 
 import { useEffect, useState } from 'react'

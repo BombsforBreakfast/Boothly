@@ -64,21 +64,33 @@ export default function Home() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setStatus('⏳ Processing... please wait.')
 
     if (isLogin) {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) setError(error.message)
+      if (error) {
+        setError(error.message)
+        setStatus('')
+      }
     } else {
       const { data, error } = await supabase.auth.signUp({ email, password })
-      if (error) return setError(error.message)
+      if (error) {
+        setError(error.message)
+        setStatus('')
+        return
+      }
 
       const userId = data.user?.id
       if (userId) {
         const { error: profileError } = await supabase.from('user_profiles').insert([
           { id: userId, role },
         ])
-        if (profileError) console.error('Failed to save role:', profileError)
+        if (profileError) {
+          console.error('Failed to save role:', profileError)
+        }
       }
+
+      setStatus(`✅ Sign-up successful! Please check ${email} to verify your account.`)
     }
   }
 
@@ -161,7 +173,10 @@ export default function Home() {
             </fieldset>
           )}
           {error && <p className="text-red-600">{error}</p>}
-          <button className="bg-blue-600 text-white px-4 py-2 rounded">
+          <button
+            className={`bg-blue-600 text-white px-4 py-2 rounded ${status.includes('⏳') ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={status.includes('⏳')}
+          >
             {isLogin ? 'Log in' : 'Sign up'}
           </button>
           <p className="text-sm text-center">

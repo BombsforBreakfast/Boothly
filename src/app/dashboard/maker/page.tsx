@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import Image from 'next/image'
 
@@ -10,16 +10,23 @@ export default function MakerDashboard() {
   const [logoUrl, setLogoUrl] = useState('')
   const [portfolio, setPortfolio] = useState<string[]>([])
   const [uploading, setUploading] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
 
-  // Placeholder user ID (will pull from auth later)
-  const userId = 'example-id'
+  // Get authenticated user ID on load
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data } = await supabase.auth.getUser()
+      setUserId(data?.user?.id ?? null)
+    }
+    fetchUser()
+  }, [])
 
   const handleFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
     type: 'profile' | 'logo' | 'portfolio'
   ) => {
     const file = e.target.files?.[0]
-    if (!file) return
+    if (!file || !userId) return
 
     const filePath = `${userId}/${type}/${file.name}`
     setUploading(true)
@@ -41,15 +48,18 @@ export default function MakerDashboard() {
   }
 
   const handleSave = async () => {
-    const { error } = await supabase
-      .from('user_profiles')
-      .upsert({
-        id: userId,
-        bio,
-        profile_url: profileUrl,
-        logo_url: logoUrl,
-        portfolio_urls: portfolio,
-      })
+    if (!userId) {
+      alert('User not authenticated.')
+      return
+    }
+
+    const { error } = await supabase.from('maker_profiles').upsert({
+      user_id: userId,
+      bio,
+      profile_url: profileUrl,
+      logo_url: logoUrl,
+      portfolio_urls: portfolio,
+    })
 
     if (error) {
       alert('Failed to save: ' + error.message)
@@ -102,5 +112,5 @@ export default function MakerDashboard() {
         {uploading ? 'Uploading...' : 'Save Profile'}
       </button>
     </main>
-  )
+    )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import Image from 'next/image'
 
@@ -24,7 +24,7 @@ export default function MakerDashboard() {
     const filePath = `${userId}/${type}/${file.name}`
     setUploading(true)
 
-    const { data, error } = await supabase.storage.from('user_uploads').upload(filePath, file, {
+    const { error } = await supabase.storage.from('user_uploads').upload(filePath, file, {
       upsert: true,
     })
 

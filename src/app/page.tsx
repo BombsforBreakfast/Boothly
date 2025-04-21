@@ -37,9 +37,9 @@ export default function Home() {
       setUser(currentUser)
       if (currentUser) {
         const { data } = await supabase
-          .from('user_profiles')
+          .from('maker_profiles')
           .select('role')
-          .eq('id', currentUser.id)
+          .eq('user_id', currentUser.id)
           .single()
         const fetchedRole = data?.role ?? null
         setUserRole(fetchedRole)
@@ -52,9 +52,9 @@ export default function Home() {
       setUser(currentUser)
       if (currentUser) {
         const { data } = await supabase
-          .from('user_profiles')
+          .from('maker_profiles')
           .select('role')
-          .eq('id', currentUser.id)
+          .eq('user_id', currentUser.id)
           .single()
         const fetchedRole = data?.role ?? null
         setUserRole(fetchedRole)

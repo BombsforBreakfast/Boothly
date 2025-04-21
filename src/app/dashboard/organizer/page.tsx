@@ -8,7 +8,6 @@ export default function OrganizerDashboard() {
   const router = useRouter()
   const [userEmail, setUserEmail] = useState<string | null>(null)
 
-  // Form state
   const [eventName, setEventName] = useState('')
   const [eventDate, setEventDate] = useState('')
   const [address, setAddress] = useState('')
@@ -32,7 +31,7 @@ export default function OrganizerDashboard() {
       if (user) {
         setUserEmail(user.email ?? null)
       } else {
-        router.push('/') // redirect to login
+        router.push('/') // redirect to login if not logged in
       }
     }
 
@@ -47,6 +46,7 @@ export default function OrganizerDashboard() {
     const { error } = await supabase.storage.from('event-flyers').upload(filePath, flyerFile)
     if (error) {
       alert('Flyer upload failed: ' + error.message)
+      console.error('Upload error:', error)
       setUploading(false)
       return null
     }
@@ -75,10 +75,10 @@ export default function OrganizerDashboard() {
     ])
 
     if (error) {
+      console.error('Insert error:', error)
       alert('Event creation failed: ' + error.message)
     } else {
       alert('🎉 Event created successfully!')
-      // Clear form
       setEventName('')
       setEventDate('')
       setAddress('')

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
+import EventCalendar from '@/components/EventCalendar'
 
 export default function OrganizerDashboard() {
   const router = useRouter()
@@ -31,7 +32,7 @@ export default function OrganizerDashboard() {
       if (user) {
         setUserEmail(user.email ?? null)
       } else {
-        router.push('/') // redirect to login if not logged in
+        router.push('/')
       }
     }
 
@@ -118,6 +119,9 @@ export default function OrganizerDashboard() {
           {uploading ? 'Uploading flyer...' : 'Create Event'}
         </button>
       </form>
+
+      {/* 👇 Here’s the 90-Day Calendar */}
+      <EventCalendar />
     </main>
   )
 }

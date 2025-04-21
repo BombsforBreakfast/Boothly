@@ -1,7 +1,7 @@
-// Updated with loading state and verification email message
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 import type { User } from '@supabase/supabase-js'
 
@@ -15,6 +15,8 @@ export default function Home() {
   const [userRole, setUserRole] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [isLogin, setIsLogin] = useState(true)
+
+  const router = useRouter()
 
   useEffect(() => {
     setIsClient(true)
@@ -40,7 +42,12 @@ export default function Home() {
           .select('role')
           .eq('id', currentUser.id)
           .single()
-        setUserRole(data?.role ?? null)
+        const role = data?.role ?? null
+        setUserRole(role)
+
+        if (role === 'maker') router.push('/dashboard/maker')
+        else if (role === 'organizer') router.push('/dashboard/organizer')
+        else if (role === 'shop_owner') router.push('/dashboard/shop')
       }
     })
 
@@ -53,14 +60,19 @@ export default function Home() {
           .select('role')
           .eq('id', currentUser.id)
           .single()
-        setUserRole(data?.role ?? null)
+        const role = data?.role ?? null
+        setUserRole(role)
+
+        if (role === 'maker') router.push('/dashboard/maker')
+        else if (role === 'organizer') router.push('/dashboard/organizer')
+        else if (role === 'shop_owner') router.push('/dashboard/shop')
       } else {
         setUserRole(null)
       }
     })
 
     return () => listener?.subscription.unsubscribe()
-  }, [])
+  }, [router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

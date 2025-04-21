@@ -31,7 +31,7 @@ export default function OrganizerDashboard() {
     <main className="p-8 max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">🎪 Organizer Dashboard</h1>
       <p>Welcome, <strong>{userEmail}</strong></p>
-      <p className="mt-4 text-gray-600">This is where you'll manage events, view applicants, and more!</p>
+      <p className="mt-4 text-gray-600">This is where you will manage events, view applicants, and more!</p>
     </main>
   )
 }

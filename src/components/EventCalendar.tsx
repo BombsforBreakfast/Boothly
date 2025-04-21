@@ -24,6 +24,8 @@ export default function EventCalendar() {
         .gte('date', today.format('YYYY-MM-DD'))
         .lte('date', future.format('YYYY-MM-DD'))
 
+        console.log('Fetched events:', data)
+        
       if (error) {
         console.error('Error fetching events:', error)
       } else {

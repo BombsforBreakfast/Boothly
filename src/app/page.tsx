@@ -88,8 +88,8 @@ export default function Home() {
 
       const userId = data.user?.id
       if (userId) {
-        const { error: profileError } = await supabase.from('user_profiles').insert([
-          { id: userId, role },
+        const { error: profileError } = await supabase.from('maker_profiles').insert([
+          { user_id: userId, role },
         ])
         if (profileError) {
           console.error('Failed to save role:', profileError)

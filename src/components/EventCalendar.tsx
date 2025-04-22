@@ -16,7 +16,7 @@ export default function EventCalendar() {
   useEffect(() => {
     const fetchEvents = async () => {
       const today = dayjs().startOf('day')
-      const future = today.add(90, 'day')
+      
 
       const { data, error } = await supabase
         .from('events')

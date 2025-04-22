@@ -21,11 +21,10 @@ export default function EventCalendar() {
       const { data, error } = await supabase
         .from('events')
         .select('id, name, date')
-        .gte('date', today.format('YYYY-MM-DD'))
-        .lte('date', future.format('YYYY-MM-DD'))
+        
 
         console.log('Fetched events:', data)
-        
+
       if (error) {
         console.error('Error fetching events:', error)
       } else {

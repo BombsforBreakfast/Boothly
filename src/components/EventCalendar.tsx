@@ -22,12 +22,12 @@ export default function EventCalendar() {
         .select('id, name, date')
         
 
-        console.log('Fetched events:', data)
-
       if (error) {
         console.error('Error fetching events:', error)
       } else {
+        console.log('Fetched events:', data)
         setEvents(data || [])
+        console.log('Parsed event dates:', (data || []).map(e => ({ name: e.name, date: dayjs(e.date).format() })))
       }
     }
 

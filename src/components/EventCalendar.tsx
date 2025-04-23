@@ -15,22 +15,25 @@ export default function EventCalendar() {
 
   useEffect(() => {
     const fetchEvents = async () => {
-      
-
       const { data, error } = await supabase
         .from('events')
         .select('id, name, date')
-        
-
+  
       if (error) {
         console.error('Error fetching events:', error)
       } else {
         console.log('Fetched events:', data)
         setEvents(data || [])
-        console.log('Parsed event dates:', (data || []).map(e => ({ name: e.name, date: dayjs(e.date).format() })))
+        console.log(
+          'Parsed event dates:',
+          (data || []).map((e) => ({
+            name: e.name,
+            date: dayjs(e.date).format(),
+          }))
+        )
       }
     }
-
+  
     fetchEvents()
   }, [])
 

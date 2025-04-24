@@ -98,7 +98,7 @@ export default function EventCalendar() {
             {selectedEvent.phone && <p><strong>Phone:</strong> {selectedEvent.phone}</p>}
             {selectedEvent.email && <p><strong>Email:</strong> {selectedEvent.email}</p>}
             {selectedEvent.cost && <p><strong>Cost:</strong> {selectedEvent.cost}</p>}
-            {selectedEvent.application_link && (
+            {selectedEvent.application_link?.startsWith('http') && (
               <p className="mt-2">
                 <a
                   href={selectedEvent.application_link}
@@ -110,7 +110,7 @@ export default function EventCalendar() {
                 </a>
               </p>
             )}
-            {selectedEvent.flyer_url && (
+            {selectedEvent.flyer_url?.startsWith('http') && (
               <img
                 src={selectedEvent.flyer_url}
                 alt="Flyer"

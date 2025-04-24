@@ -78,14 +78,8 @@ export default function EventCalendar() {
 
       {/* Modal */}
       {selectedEvent && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-          onClick={() => setSelectedEvent(null)}
-        >
-          <div
-            className="bg-white p-6 rounded shadow-xl max-w-md w-full relative"
-            onClick={(e) => e.stopPropagation()}
-          >
+  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+    <div className="bg-white p-6 rounded shadow-xl max-w-md w-full relative">
             <button
               onClick={() => setSelectedEvent(null)}
               className="absolute top-2 right-3 text-gray-500 hover:text-black text-xl"

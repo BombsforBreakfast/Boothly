@@ -68,8 +68,8 @@ export default function OrganizerDashboard() {
         date: eventDate,
         address,
         phone,
-        contact_email: email,
-        cost_structure: cost,
+        email: email,
+        cost: cost,
         application_link: applicationLink,
         flyer_url: uploadedUrl,
       }
@@ -104,7 +104,7 @@ export default function OrganizerDashboard() {
         <input type="text" required placeholder="Address" value={address} onChange={e => setAddress(e.target.value)} className="w-full p-2 border rounded" />
         <input type="tel" required placeholder="Phone Number" value={phone} onChange={e => setPhone(e.target.value)} className="w-full p-2 border rounded" />
         <input type="email" required placeholder="Email Contact" value={email} onChange={e => setEmail(e.target.value)} className="w-full p-2 border rounded" />
-        <textarea placeholder="Basic Cost Structure" value={cost} onChange={e => setCost(e.target.value)} className="w-full p-2 border rounded" rows={3} />
+        <textarea placeholder="Basic Cost" value={cost} onChange={e => setCost(e.target.value)} className="w-full p-2 border rounded" rows={3} />
         <input type="url" placeholder="Application Link" value={applicationLink} onChange={e => setApplicationLink(e.target.value)} className="w-full p-2 border rounded" />
 
         <div>

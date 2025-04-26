@@ -18,31 +18,79 @@ type Event = {
 
 export default function EventCalendar() {
   const [events, setEvents] = useState<Event[]>([])
+  const [suggestions, setSuggestions] = useState<string[]>([])
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
+
+  // Filters
+  const [keyword, setKeyword] = useState('')
+  const [startDate, setStartDate] = useState(dayjs().format('YYYY-MM-DD'))
+  const [endDate, setEndDate] = useState(dayjs().add(90, 'day').format('YYYY-MM-DD'))
 
   useEffect(() => {
     const fetchEvents = async () => {
-      const { data, error } = await supabase
-        .from('events')
-        .select('id, name, date, address, phone, email, cost, flyer_url, application_link')
+      let query = supabase.from('events').select(
+        'id, name, date, address, phone, email, cost, flyer_url, application_link'
+      )
+
+      // Apply date filters
+      query = query.gte('date', startDate).lte('date', endDate)
+
+      // Apply keyword filter if provided
+      if (keyword.trim() !== '') {
+        query = query.ilike('name', `%${keyword}%`)
+      }
+
+      const { data, error } = await query
 
       if (error) {
         console.error('Error fetching events:', error)
       } else {
-        console.log('Fetched events:', data)
         setEvents(data || [])
+        // Build unique name suggestions
+        const names = Array.from(new Set((data || []).map((e) => e.name)))
+        setSuggestions(names)
       }
     }
 
     fetchEvents()
-  }, [])
+  }, [keyword, startDate, endDate])
 
-  const calendarDays = Array.from({ length: 90 }, (_, i) =>
-    dayjs().add(i, 'day')
-  )
+  const calendarDays = Array.from({ length: 90 }, (_, i) => dayjs().add(i, 'day'))
 
   return (
     <div className="mt-10 relative">
+      {/* Filter Section */}
+      <div className="flex gap-4 mb-6 flex-wrap">
+        <div className="flex-1">
+          <input
+            type="text"
+            list="event-suggestions"
+            placeholder="Search keyword..."
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            className="w-full border p-2 rounded"
+          />
+          <datalist id="event-suggestions">
+            {suggestions.map((name) => (
+              <option key={name} value={name} />
+            ))}
+          </datalist>
+        </div>
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          className="border p-2 rounded"
+        />
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          className="border p-2 rounded"
+        />
+      </div>
+
+      {/* Calendar Grid */}
       <h2 className="text-xl font-semibold mb-4">📅 90-Day Calendar</h2>
       <div className="flex overflow-x-auto space-x-2">
         {calendarDays.map((day) => {
@@ -78,8 +126,14 @@ export default function EventCalendar() {
 
       {/* Modal */}
       {selectedEvent && (
-  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-    <div className="bg-white p-6 rounded shadow-xl max-w-md w-full relative">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+          onClick={() => setSelectedEvent(null)}
+        >
+          <div
+            className="bg-white p-6 rounded shadow-xl max-w-md w-full relative"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               onClick={() => setSelectedEvent(null)}
               className="absolute top-2 right-3 text-gray-500 hover:text-black text-xl"
@@ -87,11 +141,29 @@ export default function EventCalendar() {
               &times;
             </button>
             <h3 className="text-xl font-bold mb-2">{selectedEvent.name}</h3>
-            <p className="text-sm text-gray-600 mb-1">📅 {dayjs(selectedEvent.date).format('MMMM D, YYYY')}</p>
-            {selectedEvent.address && <p><strong>Address:</strong> {selectedEvent.address}</p>}
-            {selectedEvent.phone && <p><strong>Phone:</strong> {selectedEvent.phone}</p>}
-            {selectedEvent.email && <p><strong>Email:</strong> {selectedEvent.email}</p>}
-            {selectedEvent.cost && <p><strong>Cost:</strong> {selectedEvent.cost}</p>}
+            <p className="text-sm text-gray-600 mb-1">
+              📅 {dayjs(selectedEvent.date).format('MMMM D, YYYY')}
+            </p>
+            {selectedEvent.address && (
+              <p>
+                <strong>Address:</strong> {selectedEvent.address}
+              </p>
+            )}
+            {selectedEvent.phone && (
+              <p>
+                <strong>Phone:</strong> {selectedEvent.phone}
+              </p>
+            )}
+            {selectedEvent.email && (
+              <p>
+                <strong>Email:</strong> {selectedEvent.email}
+              </p>
+            )}
+            {selectedEvent.cost && (
+              <p>
+                <strong>Cost:</strong> {selectedEvent.cost}
+              </p>
+            )}
             {selectedEvent.application_link?.startsWith('http') && (
               <p className="mt-2">
                 <a

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import Image from 'next/image'
+import EventCalendar from '@/components/EventCalendar'
 
 export default function MakerDashboard() {
   const [bio, setBio] = useState('')
@@ -12,7 +13,6 @@ export default function MakerDashboard() {
   const [uploading, setUploading] = useState(false)
   const [userId, setUserId] = useState<string | null>(null)
 
-  // Get authenticated user ID on load
   useEffect(() => {
     const fetchUser = async () => {
       const { data } = await supabase.auth.getUser()
@@ -69,8 +69,8 @@ export default function MakerDashboard() {
   }
 
   return (
-    <main className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Maker Profile</h1>
+    <main className="max-w-3xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-6">Maker Dashboard</h1>
 
       <div className="mb-4">
         <label className="block font-medium mb-1">Profile Photo</label>
@@ -111,6 +111,11 @@ export default function MakerDashboard() {
       >
         {uploading ? 'Uploading...' : 'Save Profile'}
       </button>
+
+      <div className="mt-10">
+        <h2 className="text-xl font-semibold mb-4">Upcoming Events</h2>
+        <EventCalendar />
+      </div>
     </main>
-    )
+  )
 }
